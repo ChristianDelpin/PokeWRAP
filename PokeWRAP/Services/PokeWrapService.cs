@@ -20,8 +20,8 @@ namespace PokeWRAP.Services
         /// </summary>
         /// <typeparam name="T">Specify which model to use</typeparam>
         /// <param name="idOrName">Optional. Used to specify what you want to look up. Null will return a full list of the specified model</param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException">Thrown if either `T` or `idOrName` are invalid.</exception>
+        /// <returns>The requested resource of type <typeparamref name="T"/>.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if either the generic type parameter T or the idOrName argument are invalid.</exception>
         public async Task<T> GetResourceAsync<T>(string? idOrName) where T : class
         {
             var result = await _client.GetResourceAsync<T>(idOrName);
