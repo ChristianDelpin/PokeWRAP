@@ -1,10 +1,14 @@
-﻿namespace PokeWRAP
+﻿using PokeWRAP.Models;
+using System.Reflection;
+using System.Text.Json;
+
+namespace PokeWRAP
 {
     public class PokeWrapClient
     {
         private readonly Uri _baseUrl= new Uri("https://pokeapi.co/api/v2/");
-
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public PokeWrapClient()
         {
@@ -12,32 +16,40 @@
             {
                 BaseAddress = _baseUrl
             };
-        }
-        public async Task<T> GetAbilityAsync<T>()
-        {
-            return await GetAsync<T>("ability");
-        }
-
-        public async Task<T> GetBerryAsync<T>()
-        {
-            return await GetAsync<T>("berry");
-        }
-
-        // Add more endpoints as development progresses.
-
-
-        private async Task<T?> GetAsync<T>(string endpoint)
-        {
-            var response = await _httpClient.GetAsync($"{_baseUrl}{endpoint}");
-            if (response.IsSuccessStatusCode)
+            _jsonOptions = new JsonSerializerOptions
             {
-                var content = await response.Content.ReadAsStringAsync();
-                return System.Text.Json.JsonSerializer.Deserialize<T>(content);
-            }
-            else
+                PropertyNameCaseInsensitive = true
+            };
+        }
+
+        // Generic method to allow getting resources by type. Allows for easy scalability.
+        internal async Task<T?> GetResourceAsync<T>(string? nameOrId)where T : class
+        {
+            var endpoint = GetApiEndpoint<T>();
+            var requestUri = $"{endpoint}/{nameOrId}";
+
+            var response = await _httpClient.GetAsync(requestUri);
+            response.EnsureSuccessStatusCode();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync(); // Read the response content as a string so the next line can deserialize it neatly.
+            return JsonSerializer.Deserialize<T>(jsonResponse, _jsonOptions);
+        }
+
+        // Generic method to allow getting resources by type. Since one model can have multiple endpoints, this allows for easy scalability.
+        private static string GetApiEndpoint<T>()
+        {
+            // This allows me to use reflection to easily get the API endpoint from the model class.
+            PropertyInfo? endpoint = typeof(T).GetProperty("ApiEndpoint", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (endpoint == null)
             {
-                throw new HttpRequestException($"Request to {endpoint} failed with status code {response.StatusCode}");
+                throw new InvalidOperationException($"Type {typeof(T).Name} does not have a static property 'ApiEndpoint'.");
             }
+            var value = endpoint.GetValue(null)?.ToString();
+            if (value == null)
+            {
+                throw new InvalidOperationException($"Type {typeof(T).Name} has a null 'ApiEndpoint'.");
+            }
+            return value;
         }
     }
 }
