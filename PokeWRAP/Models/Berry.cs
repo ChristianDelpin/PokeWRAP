@@ -11,7 +11,9 @@ namespace PokeWRAP.Models
 {
     public class Berry
     {
-        internal new static string ApiEndpoint { get; } = "berry";
+        //                                 vvvvvvvv is necessary for reflection to work properly.
+        internal static string ApiEndpoint { get; } = "berry";
+
         /// <summary>
         /// The unique identifier for the berry.
         /// </summary>
@@ -20,7 +22,7 @@ namespace PokeWRAP.Models
         /// <summary>
         /// Name of the berry.  
         /// </summary> 
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Time it takes the tree to grow one stage, 
@@ -28,7 +30,7 @@ namespace PokeWRAP.Models
         /// these growth stages before they can be picked.
         /// </summary> 
         [JsonPropertyName("growth_time")]
-        public int GrowthTime { get; }
+        public int GrowthTime { get; set; }
 
 
         /// <summary>
@@ -40,53 +42,54 @@ namespace PokeWRAP.Models
         /// <summary>
         /// The power of the move "Natural Gift" when used with this Berry.
         /// </summary>
-        public int MaxHarvest { get;  }
+        public int MaxHarvest { get; set; }
 
         /// <summary>
         /// The power of the move "Natural Gift" when used with this Berry.
         /// </summary>
 
         [JsonPropertyName("natural_gift_power")]
-        public int NaturalGiftPower { get; }
+        public int NaturalGiftPower { get; set; }
 
 
         /// <summary>
         /// The size of this Berry, in millimeters.
         /// </summary>
-        public int Size { get; }
+        public int Size { get; set; }
 
         /// <summary>
         /// The smoothness of this Berry, used in making Pokéblocks or Poffins.
         /// </summary>
-        public int Smoothness { get; }
+        public int Smoothness { get; set; }
 
         /// <summary>
         /// The speed at which this Berry dries out the soil as 
         /// it grows. A higher rate means the soil dries more quickly.
         /// </summary>
         [JsonPropertyName("soil_dryness")]
-        public int SoilDryness { get; }
+        public int SoilDryness { get; set; }
 
         /// <summary>
         /// The firmness of this berry, used in making Pokéblocks or Poffins.
         /// </summary>
-        public int Firmness { get; }
+        /// TODO: Need to implement BerryFirmness endpoint.
+        public string Firmness { get; set; }
 
         /// <summary>
         /// A list of references to each flavor a berry can have and the potency of each of those flavors in regard to this berry.
         /// </summary>
-        public List<string> Flavors { get; } = new List<string>();
+        public List<string> Flavors { get; set; } = new List<string>();
 
         /// <summary>
         /// Berries are actually items. This is a reference to the item specific data for this berry.
         /// </summary>
-        public int Item { get; }
+        public int Item { get; set; }
 
         /// <summary>
         /// The type inherited by "Natural Gift" when used with this Berry.
         /// </summary>
         [JsonPropertyName("natural_gift_type")]
-        public List<string> NaturalGiftType { get; } = new List<string>();
+        public List<string> NaturalGiftType { get; set; } = new List<string>();
 
         public override string? ToString()
         {
