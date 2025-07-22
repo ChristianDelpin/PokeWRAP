@@ -14,46 +14,20 @@ namespace PokeWRAP.Services
         {
             _client = new PokeWrapClient();
         }
-        public async Task<T> GetAbilityAsync<T>()
-        {
-            return await _client.GetAbilityAsync<T>();
-        }
-        public async Task<T> GetBerryAsync<T>()
-        {
-            return await _client.GetBerryAsync<T>();
-        }
 
-
-        // Copy of what I attempted to do in Finbot.
-        /*
-          public async Task<Result<T>> TryGetAsync<T>(string endpoint) where T : NamedApiResource, new()
+        /// <summary>
+        /// Used to fetch data.
+        /// </summary>
+        /// <typeparam name="T">Specify which model to use</typeparam>
+        /// <param name="idOrName">Optional. Used to specify what you want to look up. Null will return a full list of the specified model</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Thrown if either `T` or `idOrName` are invalid.</exception>
+        public async Task<T> GetResourceAsync<T>(string? idOrName) where T : class
         {
-            try
-            {
-                var resource = await _pokeClient.GetResourceAsync<T>(endpoint);
-                return new Result<T>()
-                {
-                   IsSuccessful = true,
-                   Data = resource
-                };
-            }
-            catch (HttpRequestException e)
-            {
-                return new Result<T>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = $"HTTP Request failed: {e.Message}"
-                };
-            }
-            catch (Exception e)
-            {
-                return new Result<T>()
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = $"An error occurred: {e.Message}"
-                };
-            }
+            var result = await _client.GetResourceAsync<T>(idOrName);
+            if (result is null)
+                throw new InvalidOperationException($"Resource of type {typeof(T).Name} with identifier '{idOrName}' was not found.");
+            return result;
         }
-        */
     }
 }
