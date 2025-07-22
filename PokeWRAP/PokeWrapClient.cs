@@ -22,6 +22,8 @@ namespace PokeWRAP
             };
         }
 
+
+        //TODO: Add tooltip summary.
         // Generic method to allow getting resources by type. Allows for easy scalability.
         internal async Task<T?> GetResourceAsync<T>(string? nameOrId)where T : class
         {
@@ -35,6 +37,7 @@ namespace PokeWRAP
             return JsonSerializer.Deserialize<T>(jsonResponse, _jsonOptions);
         }
 
+        //TODO: Add tooltip summary.
         // Generic method to allow getting resources by type. Since one model can have multiple endpoints, this allows for easy scalability.
         private static string GetApiEndpoint<T>()
         {
