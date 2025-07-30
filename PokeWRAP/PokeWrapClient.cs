@@ -48,7 +48,7 @@ namespace PokeWRAP
                 throw new InvalidOperationException($"Type {typeof(T).Name} does not have a static property 'ApiEndpoint'.");
             }
             var value = endpoint.GetValue(null)?.ToString();
-            if (value == null)
+            if (string.IsNullOrEmpty(value))
             {
                 throw new InvalidOperationException($"Type {typeof(T).Name} has a null 'ApiEndpoint'.");
             }
